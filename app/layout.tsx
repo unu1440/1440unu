@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "1440unu",
-  description: "1440unu, 하루 1440분 중 어느 한 순간을 기록하는 블로그",
+  description: "1440unu 개인 블로그",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

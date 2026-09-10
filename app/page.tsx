@@ -26,8 +26,7 @@ export default async function HomePage() {
           1440<span>unu</span>
         </div>
         <p className="hero-tagline">
-          하루는 <strong>1440분</strong>이다. 그중 <strong>어느 한 분(unu)</strong>에
-          머물러 남기는 기록들.
+          이 사이트는 테스트 중입니다.
         </p>
       </section>
 
