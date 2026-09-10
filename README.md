@@ -1,4 +1,4 @@
-# 1440unu
+# 1440unu.com
 
 Next.js + SQLite(Prisma) 기반 동적 블로그를 기획 중입니다.
 
