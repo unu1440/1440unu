@@ -23,7 +23,7 @@ export default async function HomePage() {
     <>
       <section className="hero">
         <div className="hero-count">
-          1440<span>unu</span>
+          {/* //1440unu */}
         </div>
         <p className="hero-tagline">
           이 사이트는 테스트 중입니다.
