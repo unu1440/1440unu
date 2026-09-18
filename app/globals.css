@@ -169,10 +169,11 @@ button:focus-visible {
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
   transition: transform 0.15s ease;
   animation: pinBreathe 4.2s ease-in-out infinite;
+  z-index: 1;
 }
 .pin:nth-of-type(2) { animation-delay: -1.4s; }
 .pin:nth-of-type(3) { animation-delay: -2.8s; }
-.pin:hover, .pin.open { transform: translate(-50%, -50%) scale(1.2); animation-play-state: paused; }
+.pin:hover, .pin.open { transform: translate(-50%, -50%) scale(1.2); animation-play-state: paused; z-index: 10; }
 
 @keyframes pinBreathe {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }
@@ -481,3 +482,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .admin-post-title { font-family: var(--serif); font-size: 16px; }
 .draft-tag { font-family: var(--mono); font-style: normal; font-size: 12px; color: var(--ink-dim); }
 .admin-post-actions { display: flex; gap: 14px; font-family: var(--mono); font-size: 13px; flex-shrink: 0; }
+
+.tree-stage {
+  transition: opacity 0.36s ease, transform 0.36s ease;
+}
+.tree-stage.tree-leaving {
+  opacity: 0;
+  transform: scale(0.97);
+}
