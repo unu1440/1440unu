@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import PostEditorForm from "@/components/PostEditorForm";
 
+// 기존 글 수정 페이지 (/admin/edit/[id])
 export default async function EditPostPage({
   params,
 }: {

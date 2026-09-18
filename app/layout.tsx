@@ -9,10 +9,12 @@ export const metadata: Metadata = {
   description: "lee 1440unu's personal website",
 };
 
+// 모든 페이지를 감싸는 루트 레이아웃 (헤더/푸터, 폰트, 전역 스타일)
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <head>
+        {/* Google Fonts 로딩 최적화용 preconnect */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

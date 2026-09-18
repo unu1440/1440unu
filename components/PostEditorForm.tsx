@@ -12,6 +12,7 @@ type Props = {
   initialCategory?: string;
 };
 
+// 새 글 작성/수정에 공용으로 쓰이는 폼 (postId가 있으면 수정, 없으면 새 글)
 export default function PostEditorForm({
   postId,
   initialTitle = "",
@@ -29,6 +30,7 @@ export default function PostEditorForm({
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // postId 유무에 따라 수정(PUT) 또는 새 글 작성(POST) API를 호출
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);

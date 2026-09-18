@@ -1,3 +1,4 @@
+// 소개 페이지 (/about)
 export default function AboutPage() {
   return (
     <div className="about-body">

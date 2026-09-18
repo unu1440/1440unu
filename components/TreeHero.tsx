@@ -18,16 +18,19 @@ const PINS: {
   { key: "blog", label: "Blog", desc: "일상, 생각, 하루의 기록.", left: "30%", top: "68.5%" },
 ];
 
+// 홈 화면의 나무 그래픽 - 핀을 클릭하면 카테고리 설명이 뜨고, 다시 클릭하면 이동
 export default function TreeHero() {
   const router = useRouter();
   const [openKey, setOpenKey] = useState<Cat | null>(null);
   const [leaving, setLeaving] = useState(false);
 
+  // 핀을 클릭하면 설명 풍선을 열거나 닫음 (같은 핀 재클릭 시 닫힘)
   function toggle(key: Cat) {
     if (leaving) return;
     setOpenKey((prev) => (prev === key ? null : key));
   }
 
+  // 카테고리 페이지로 이동 - 전환 애니메이션을 먼저 보여준 뒤 라우팅
   function goToCategory(key: Cat) {
   if (leaving) return;
   setLeaving(true);
@@ -36,6 +39,7 @@ export default function TreeHero() {
 
   return (
     <>
+      {/* 나무 사진에 바람에 흔들리는 듯한 효과를 주는 SVG 필터 (화면에는 보이지 않음) */}
       <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
         <filter id="windWobble">
           <feTurbulence type="fractalNoise" numOctaves={2} seed={7} result="noise">

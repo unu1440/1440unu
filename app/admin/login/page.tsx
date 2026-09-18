@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// 관리자 로그인 페이지 (/admin/login)
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -10,6 +11,7 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // 로그인 API 호출 후 성공하면 관리자 대시보드로 이동
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);

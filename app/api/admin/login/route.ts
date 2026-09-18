@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { createSessionCookieValue, ADMIN_COOKIE_NAME, SESSION_MAX_AGE } from "@/lib/auth";
 
+// 관리자 로그인 - 아이디/비밀번호 검증 후 서명된 세션 쿠키 발급
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const { username, password } = body;

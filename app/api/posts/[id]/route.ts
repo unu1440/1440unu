@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 
 const VALID_CATS = ["study", "tech", "blog"];
 
+// 글 수정 - 관리자만 가능, 유효하지 않은 카테고리는 "blog"로 대체
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -34,6 +35,7 @@ export async function PUT(
   return NextResponse.json({ post });
 }
 
+// 글 삭제 - 관리자만 가능, 외래키 제약 때문에 딸린 댓글을 먼저 삭제
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

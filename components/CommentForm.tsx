@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// 글 상세 페이지에 쓰이는 댓글 작성 폼
 export default function CommentForm({ postId }: { postId: string }) {
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
@@ -10,6 +11,7 @@ export default function CommentForm({ postId }: { postId: string }) {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // 댓글 등록 API 호출 후 입력값 초기화, 페이지 갱신으로 새 댓글 반영
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!content.trim()) {

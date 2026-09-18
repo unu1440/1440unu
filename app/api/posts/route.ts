@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 
+// 제목을 URL에 쓸 수 있는 slug로 변환 (한글, 영숫자, 하이픈만 허용)
 function slugify(title: string) {
   return title
     .trim()
@@ -13,6 +14,7 @@ function slugify(title: string) {
 
 const VALID_CATS = ["study", "tech", "blog"];
 
+// 새 글 작성 - 관리자만 가능, slug가 비거나 중복되면 타임스탬프를 덧붙여 고유화
 export async function POST(req: NextRequest) {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "권한이 없습니다." }, { status: 401 });

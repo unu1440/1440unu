@@ -1,3 +1,4 @@
+// 카테고리 페이지 로딩 중 보여줄 스켈레톤 UI
 export default function CategoryLoading() {
   return (
     <>
