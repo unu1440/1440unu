@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const ONLINE_WINDOW_MS = 2 * 60 * 1000; // 최근 2분 안에 신호 온 세션만 "접속 중"으로 침
 const CLEANUP_AGE_MS = 60 * 60 * 1000; // 1시간 넘게 조용한 기록은 가끔 정리
 
