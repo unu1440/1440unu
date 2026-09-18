@@ -11,13 +11,15 @@ function slugify(title: string) {
     .replace(/-+/g, "-");
 }
 
+const VALID_CATS = ["study", "tech", "blog"];
+
 export async function POST(req: NextRequest) {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "권한이 없습니다." }, { status: 401 });
   }
 
   const body = await req.json().catch(() => ({}));
-  const { title, excerpt, content, published } = body;
+  const { title, excerpt, content, published, category } = body;
 
   if (!title || !content) {
     return NextResponse.json({ error: "제목과 본문은 필수입니다." }, { status: 400 });
@@ -36,6 +38,7 @@ export async function POST(req: NextRequest) {
       content,
       slug,
       published: published ?? true,
+      category: VALID_CATS.includes(category) ? category : "blog",
     },
   });
 

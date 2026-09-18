@@ -9,6 +9,7 @@ type Props = {
   initialExcerpt?: string;
   initialContent?: string;
   initialPublished?: boolean;
+  initialCategory?: string;
 };
 
 export default function PostEditorForm({
@@ -17,11 +18,13 @@ export default function PostEditorForm({
   initialExcerpt = "",
   initialContent = "",
   initialPublished = true,
+  initialCategory = "blog",
 }: Props) {
   const [title, setTitle] = useState(initialTitle);
   const [excerpt, setExcerpt] = useState(initialExcerpt);
   const [content, setContent] = useState(initialContent);
   const [published, setPublished] = useState(initialPublished);
+  const [category, setCategory] = useState(initialCategory);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -34,7 +37,7 @@ export default function PostEditorForm({
     const res = await fetch(postId ? `/api/posts/${postId}` : "/api/posts", {
       method: postId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, excerpt, content, published }),
+      body: JSON.stringify({ title, excerpt, content, published, category }),
     });
 
     setSaving(false);
@@ -54,6 +57,14 @@ export default function PostEditorForm({
       <label>
         제목
         <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+      </label>
+      <label>
+        카테고리
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="study">Study</option>
+          <option value="tech">Tech</option>
+          <option value="blog">Blog</option>
+        </select>
       </label>
       <label>
         요약 (목록에 보일 한두 줄, 선택)

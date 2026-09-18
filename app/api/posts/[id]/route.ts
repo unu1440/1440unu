@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 
+const VALID_CATS = ["study", "tech", "blog"];
+
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -12,7 +14,7 @@ export async function PUT(
 
   const { id } = await params;
   const body = await req.json().catch(() => ({}));
-  const { title, excerpt, content, published } = body;
+  const { title, excerpt, content, published, category } = body;
 
   if (!title || !content) {
     return NextResponse.json({ error: "제목과 본문은 필수입니다." }, { status: 400 });
@@ -20,7 +22,13 @@ export async function PUT(
 
   const post = await prisma.post.update({
     where: { id },
-    data: { title, excerpt: excerpt || null, content, published },
+    data: {
+      title,
+      excerpt: excerpt || null,
+      content,
+      published,
+      category: VALID_CATS.includes(category) ? category : "blog",
+    },
   });
 
   return NextResponse.json({ post });

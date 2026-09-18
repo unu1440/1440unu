@@ -27,6 +27,7 @@ export default async function EditPostPage({
         initialExcerpt={post.excerpt ?? ""}
         initialContent={post.content}
         initialPublished={post.published}
+        initialCategory={post.category}
       />
     </div>
   );
