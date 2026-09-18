@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 const VALID_CATS = ["study", "tech", "blog"] as const;
 type Cat = (typeof VALID_CATS)[number];

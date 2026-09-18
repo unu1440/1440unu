@@ -29,12 +29,10 @@ export default function TreeHero() {
   }
 
   function goToCategory(key: Cat) {
-    if (leaving) return;
-    setLeaving(true);
-    setTimeout(() => {
-      router.push(`/category/${key}`);
-    }, 380);
-  }
+  if (leaving) return;
+  setLeaving(true);
+  router.push(`/category/${key}`);
+ }
 
   return (
     <>
