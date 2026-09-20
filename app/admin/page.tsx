@@ -26,6 +26,9 @@ export default async function AdminDashboard() {
           <Link className="btn" href="/admin/new">
             새 글 쓰기
           </Link>
+          <Link className="btn btn-ghost" href="/about">
+            프로필 편집
+          </Link>
           <LogoutButton />
         </div>
       </div>
