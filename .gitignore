@@ -5,3 +5,9 @@ out/
 *.db
 *.db-journal
 .DS_Store
+
+# 개인 신상 원본 (GitHub에 올리지 않음)
+private/
+
+# TypeScript 증분 빌드 캐시
+tsconfig.tsbuildinfo

@@ -1,41 +1,25 @@
-
 import "./globals.css";
-import Link from "next/link";
 import type { Metadata } from "next";
-import PresenceStatus from "@/components/PresenceStatus";
 
 export const metadata: Metadata = {
   title: "1440unu.com",
-  description: "lee 1440unu's personal website",
+  description: "Hyunho Lee's homepage",
 };
 
-// 모든 페이지를 감싸는 루트 레이아웃 (헤더/푸터, 폰트, 전역 스타일)
+// 모든 페이지를 감싸는 루트 레이아웃 (글꼴, 전역 스타일, 푸터). 헤더는 페이지마다 SiteHeader로 직접 넣음
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <head>
-        {/* Google Fonts 로딩 최적화용 preconnect */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* 본문 글꼴: Pretendard (한글·영문 같이) */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500;1,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
           rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
         />
       </head>
       <body>
         <div className="shell">
-          <header className="site-header">
-            <Link className="wordmark" href="/">
-              1440<span>unu.com</span>
-            </Link>
-            <nav className="site-nav">
-              <PresenceStatus />
-              <Link href="/">Tree</Link>
-              <Link href="/about">me</Link>
-            </nav>
-          </header>
-
-          <main>{children}</main>
+          {children}
 
           <footer className="site-footer">
             <span>©1440unu·2026</span>

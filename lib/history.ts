@@ -1,29 +1,60 @@
-export const HISTORY_TYPES = ["career", "education"] as const;
+// 항목 종류 (HistoryEntry.type에 들어가는 값) - titleHint / orgHint: 관리자 입력 폼에서 보여줄 라벨
+export const ENTRY_TYPES = {
+  project: { name: "프로젝트", titleHint: "프로젝트명", orgHint: "한 줄 요약" },
+  education: { name: "학력", titleHint: "학위 · 전공", orgHint: "학교" },
+  experience: { name: "경력", titleHint: "역할", orgHint: "기관 · 회사" },
+  certification: { name: "자격", titleHint: "자격증 이름", orgHint: "발급 기관" },
+} as const;
+
+export type SectionKey = keyof typeof ENTRY_TYPES;
+
+// 화면에 보이는 섹션 - 한 섹션에 여러 종류를 묶을 수 있음 (학력+경력은 한 타임라인에 최신순)
+// label: 영어 페이지 제목 / labelKo: 한국어 페이지 제목
+export const SECTIONS = [
+  { key: "project", label: "Projects", labelKo: "프로젝트", types: ["project"] },
+  { key: "background", label: "Education & Experience", labelKo: "학력과 경력", types: ["education", "experience"] },
+  { key: "certification", label: "Certifications", labelKo: "자격", types: ["certification"] },
+] as const satisfies readonly { key: string; label: string; labelKo: string; types: readonly SectionKey[] }[];
+
+export type Section = (typeof SECTIONS)[number];
+
+export const HISTORY_TYPES = Object.keys(ENTRY_TYPES) as SectionKey[];
 
 export type HistoryInput = {
-  type: (typeof HISTORY_TYPES)[number];
+  type: SectionKey;
   title: string;
+  titleEn: string | null;
   org: string;
+  orgEn: string | null;
   period: string;
   sortDate: Date;
   description: string | null;
+  descriptionEn: string | null;
+  link: string | null;
+  tags: string | null;
 };
 
-/** 경력/학력 요청 본문을 검증하고 DB에 넣을 형태로 변환 (실패 시 error 메시지 반환) */
+function optionalText(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+/** 섹션 항목 요청 본문을 검증하고 DB에 넣을 형태로 변환 (실패 시 error 메시지 반환) */
 export function parseHistoryBody(
   body: Record<string, unknown>
 ): { data: HistoryInput } | { error: string } {
-  const { type, title, org, period, sortDate, description } = body;
+  const { type, title, titleEn, org, orgEn, period, sortDate, description, descriptionEn, link, tags } = body;
 
-  if (!HISTORY_TYPES.includes(type as HistoryInput["type"])) {
-    return { error: "구분은 경력 또는 학력이어야 합니다." };
+  if (!HISTORY_TYPES.includes(type as SectionKey)) {
+    return { error: "섹션 구분이 올바르지 않습니다." };
   }
   if (
     typeof title !== "string" || !title.trim() ||
-    typeof org !== "string" || !org.trim() ||
     typeof period !== "string" || !period.trim()
   ) {
-    return { error: "제목, 기관, 기간은 필수입니다." };
+    return { error: "제목과 기간은 필수입니다." };
+  }
+  if (org !== undefined && typeof org !== "string") {
+    return { error: "기관 값이 올바르지 않습니다." };
   }
 
   // 정렬용 날짜: "YYYY-MM"(월 입력) 또는 "YYYY-MM-DD" 형식만 허용
@@ -35,14 +66,24 @@ export function parseHistoryBody(
     return { error: "정렬 기준 날짜가 올바르지 않습니다." };
   }
 
+  const linkValue = optionalText(link);
+  if (linkValue && !/^(https?:\/\/|mailto:|\/)/.test(linkValue)) {
+    return { error: "링크는 http(s):// 로 시작해야 합니다." };
+  }
+
   return {
     data: {
-      type: type as HistoryInput["type"],
+      type: type as SectionKey,
       title: title.trim(),
-      org: org.trim(),
+      titleEn: optionalText(titleEn),
+      org: typeof org === "string" ? org.trim() : "",
+      orgEn: optionalText(orgEn),
       period: period.trim(),
       sortDate: date,
-      description: typeof description === "string" && description.trim() ? description.trim() : null,
+      description: optionalText(description),
+      descriptionEn: optionalText(descriptionEn),
+      link: linkValue,
+      tags: optionalText(tags),
     },
   };
 }

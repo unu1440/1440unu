@@ -1,39 +1,73 @@
 # 1440unu.com
 
-Next.js + SQLite(Prisma) 기반 동적 블로그를 기획 중입니다.
+개인블로그
 
-## 폴더 구조
+홈은 나무 이미지
+점(Study / Tech / Blog) 누르면 그 카테고리로.
+
+## Stack
+
+Next.js 14 (App Router) · TypeScript · Prisma · Supabase · Vercel
+
+폰트: Newsreader / Work Sans / IBM Plex Mono
+톤: 파스텔 그레이, 흑백 베이스
+
+## 구조
 
 ```
-1440unu-dynamic/
-├── app/
-│   ├── page.tsx               # 홈 (글 목록)
-│   ├── posts/[slug]/page.tsx  # 개별 글 + 댓글
-│   ├── about/page.tsx         # 소개
-│   ├── admin/
-│   │   ├── login/page.tsx     # 관리자 로그인
-│   │   ├── page.tsx           # 대시보드 (글 목록/삭제)
-│   │   ├── new/page.tsx       # 새 글 쓰기
-│   │   └── edit/[id]/page.tsx # 글 수정
-│   ├── api/
-│   │   ├── admin/login, logout
-│   │   ├── posts, posts/[id]  # 글 CRUD (관리자만)
-│   │   └── comments           # 댓글 작성 (누구나)
-│   └── globals.css
-├── components/                # 댓글 폼, 에디터 폼, 로그아웃/삭제 버튼
-├── lib/
-│   ├── prisma.ts              # Prisma 클라이언트
-│   └── auth.ts                # 세션 쿠키 발급/검증
-├── prisma/
-│   ├── schema.prisma          # Post, Comment 모델
-│   └── seed.mjs               # 샘플 글 하나 넣는 시드
-└── scripts/generate-hash.mjs  # 관리자 비밀번호 해시 생성기
+app/
+├─ page.tsx              홈 = Tree 히어로
+├─ category/[cat]/       카테고리별 글 목록
+├─ posts/[slug]/         글 상세 + 댓글
+├─ admin/                로그인 · 글쓰기 · 수정
+└─ api/
+   ├─ posts, comments
+   └─ presence/          접속자 수
+
+components/TreeHero.tsx   핀 + 플라이아웃 + 전환
+components/PresenceStatus.tsx
+prisma/schema.prisma      Post · Comment · Presence
+public/tree.jpg
 ```
 
+## 로컬 실행
 
-## 업데이트 예정
+```bash
+npm install
+```
 
-- 댓글 스팸 방지(레이트 리밋, 캡차)
+`.env`:
+```dotenv
+DATABASE_URL="...6543/postgres?pgbouncer=true"   # Transaction pooler
+DIRECT_URL="...5432/postgres"                     # Session pooler, migrate 전용
+SESSION_SECRET="랜덤 문자열"
+ADMIN_USERNAME="아이디"
+ADMIN_PASSWORD_HASH="\$2a\$10\$..."                # npm run hash-password -- 비밀번호
+```
+
+```bash
+npx prisma generate
+npm run dev
+```
+
+## 배포
+
+```bash
+git push
+```
+
+Vercel이 알아서 붙임. 환경변수는 로컬 `.env`랑 동일 (단, `$` 이스케이프 없이 그대로).
+
+## 자주 걸리는 것
+
+- Supabase 7일 방치하면 pause → 대시보드에서 Resume
+- 런타임은 무조건 Transaction pooler(6543). Session(5432)는 커넥션 15개 제한
+- 스키마 바꾸면 `npx prisma generate` + TS 서버 재시작
+- `npm run <script> <arg>`는 `--` 필수
+
+## TODO
+
+- 카테고리 추가
+- 댓글 삭제
 - 이미지 업로드
-- 태그/카테고리
-- RSS 피드
+- 페이지네이션

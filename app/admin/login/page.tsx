@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import SiteHeader from "@/components/SiteHeader";
 
 // 관리자 로그인 페이지 (/admin/login)
 export default function AdminLoginPage() {
@@ -11,7 +12,7 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // 로그인 API 호출 후 성공하면 관리자 대시보드로 이동
+  // 로그인 API 호출 후 성공하면 홈(편집 모드)으로 이동
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -31,31 +32,34 @@ export default function AdminLoginPage() {
       return;
     }
 
-    router.push("/admin");
+    router.push("/");
     router.refresh();
   }
 
   return (
-    <div className="admin-page">
-      <h1>관리자 로그인</h1>
-      <form className="admin-form" onSubmit={handleSubmit}>
-        <label>
-          아이디
-          <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus />
-        </label>
-        <label>
-          비밀번호
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        {error && <p className="form-error">{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? "확인 중..." : "로그인"}
-        </button>
-      </form>
-    </div>
+    <>
+      <SiteHeader />
+      <div className="admin-page">
+        <h1>관리자 로그인</h1>
+        <form className="admin-form" onSubmit={handleSubmit}>
+          <label>
+            아이디
+            <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus />
+          </label>
+          <label>
+            비밀번호
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          {error && <p className="form-error">{error}</p>}
+          <button type="submit" disabled={loading}>
+            {loading ? "확인 중..." : "로그인"}
+          </button>
+        </form>
+      </div>
+    </>
   );
 }

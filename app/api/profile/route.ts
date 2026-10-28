@@ -7,6 +7,26 @@ import { requireAdmin } from "@/lib/auth";
 const MAX_PHOTO_LENGTH = 700_000;
 const PHOTO_PATTERN = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 
+const TEXT_FIELDS = [
+  ["name", 100],
+  ["nameEn", 100],
+  ["slogan", 200],
+  ["sloganEn", 200],
+  ["tagline", 200],
+  ["taglineEn", 200],
+  ["affiliation", 200],
+  ["affiliationEn", 200],
+  ["bio", 5000],
+  ["bioEn", 5000],
+  ["interests", 3000],
+  ["interestsEn", 3000],
+  ["skills", 3000],
+  ["email", 200],
+  ["github", 500],
+  ["scholar", 500],
+  ["cvUrl", 500],
+] as const;
+
 // 프로필 저장 - 관리자만 가능, 싱글턴(id="me") 행을 upsert. 보내지 않은 필드는 그대로 유지
 export async function PUT(req: NextRequest) {
   if (!(await requireAdmin())) {
@@ -14,9 +34,9 @@ export async function PUT(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => ({}));
-  const { photo, name, tagline, bio } = body;
+  const { photo } = body;
 
-  const data: { photo?: string | null; name?: string | null; tagline?: string | null; bio?: string | null } = {};
+  const data: Record<string, string | null> = {};
 
   // photo: 문자열이면 data URL 검증 후 저장, null/빈 문자열이면 사진 삭제
   if (photo !== undefined) {
@@ -30,16 +50,21 @@ export async function PUT(req: NextRequest) {
     }
   }
 
-  for (const [key, value, max] of [
-    ["name", name, 100],
-    ["tagline", tagline, 200],
-    ["bio", bio, 5000],
-  ] as const) {
+  // 텍스트 필드: [이름, 최대 길이]
+  for (const [key, max] of TEXT_FIELDS) {
+    const value = body[key];
     if (value === undefined) continue;
     if (typeof value !== "string" || value.length > max) {
       return NextResponse.json({ error: `${key} 값이 올바르지 않습니다.` }, { status: 400 });
     }
     data[key] = value.trim() || null;
+  }
+
+  // 링크 필드는 http(s)로 시작하는 주소만 허용 (javascript: 같은 값 차단)
+  for (const key of ["github", "scholar", "cvUrl"]) {
+    if (data[key] && !/^https?:\/\//.test(data[key]!)) {
+      return NextResponse.json({ error: "링크는 http(s):// 로 시작해야 합니다." }, { status: 400 });
+    }
   }
 
   await prisma.profile.upsert({
@@ -48,6 +73,7 @@ export async function PUT(req: NextRequest) {
     create: { id: "me", ...data },
   });
 
-  revalidatePath("/about");
+  revalidatePath("/");
+  revalidatePath("/ko");
   return NextResponse.json({ ok: true });
 }

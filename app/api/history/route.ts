@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { parseHistoryBody } from "@/lib/history";
 
-// 경력/학력 항목 추가 - 관리자만 가능
+// 포트폴리오 섹션 항목 추가 - 관리자만 가능
 export async function POST(req: NextRequest) {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "권한이 없습니다." }, { status: 401 });
@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   const entry = await prisma.historyEntry.create({ data: parsed.data });
-  revalidatePath("/about");
+  revalidatePath("/");
+  revalidatePath("/ko");
   return NextResponse.json({ entry });
 }

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { parseHistoryBody } from "@/lib/history";
 
-// 경력/학력 항목 수정 - 관리자만 가능
+// 포트폴리오 섹션 항목 수정 - 관리자만 가능
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -21,11 +21,12 @@ export async function PUT(
   }
 
   const entry = await prisma.historyEntry.update({ where: { id }, data: parsed.data });
-  revalidatePath("/about");
+  revalidatePath("/");
+  revalidatePath("/ko");
   return NextResponse.json({ entry });
 }
 
-// 경력/학력 항목 삭제 - 관리자만 가능
+// 포트폴리오 섹션 항목 삭제 - 관리자만 가능
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -36,6 +37,7 @@ export async function DELETE(
 
   const { id } = await params;
   await prisma.historyEntry.delete({ where: { id } });
-  revalidatePath("/about");
+  revalidatePath("/");
+  revalidatePath("/ko");
   return NextResponse.json({ ok: true });
 }
