@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <footer className="site-footer">
             <span>©1440unu·2026</span>
-            <a href="mailto:1440unu@gmail.com">1440unu@gmail.com</a>
+            <a href="mailto:lhh1023@gachon.ac.kr">lhh1023@gachon.ac.kr</a>
           </footer>
         </div>
       </body>
