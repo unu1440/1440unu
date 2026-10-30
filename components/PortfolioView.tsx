@@ -97,13 +97,9 @@ export default function PortfolioView({ lang, profile, entries }: Props) {
 
       <div className="portfolio">
         <aside className="side">
+          {/* 사진이 없으면 사이트 아이콘(app/icon.svg, 로봇팔)을 프로필 사진 대신 보여줌 */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {/* 사진이 없으면 빈 회색 칸 대신 아예 안 보여줌 (관리자에게만 자리 표시) */}
-          {profile.photo ? (
-            <img className="side-photo" src={profile.photo} alt={name} />
-          ) : (
-            isAdmin && <div className="side-photo photo-empty" aria-hidden />
-          )}
+          <img className="side-photo" src={profile.photo || "/icon.svg"} alt={profile.photo ? name : ""} />
           <h1 className="side-name">{name}</h1>
           {subName && <p className="side-name-en">{subName}</p>}
           {profile.tagline && <p className="side-tagline">{pick(lang, profile.tagline, profile.taglineEn)}</p>}

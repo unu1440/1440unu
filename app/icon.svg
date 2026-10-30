@@ -1,14 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#1f5fae"/>
+  <!-- 사이트 글자색(진한 따뜻한 먹색) 바탕 + 바탕색(크림) 로봇팔 - 탭에서도 눈에 띄고, 사진 없을 때 프로필 자리에도 씀 -->
+  <rect width="64" height="64" rx="14" fill="#27241f"/>
   <!-- 받침 -->
-  <rect x="10" y="50" width="30" height="7" rx="3.5" fill="#fff"/>
+  <rect x="10" y="50" width="30" height="7" rx="3.5" fill="#f4efe6"/>
   <!-- 아래팔·윗팔 -->
-  <path d="M25 50 L25 31 L43 17" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M25 50 L25 31 L43 17" fill="none" stroke="#f4efe6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- 관절 -->
-  <circle cx="25" cy="50" r="4.5" fill="#1f5fae" stroke="#fff" stroke-width="3"/>
-  <circle cx="25" cy="31" r="4.5" fill="#1f5fae" stroke="#fff" stroke-width="3"/>
+  <circle cx="25" cy="50" r="4.5" fill="#27241f" stroke="#f4efe6" stroke-width="3"/>
+  <circle cx="25" cy="31" r="4.5" fill="#27241f" stroke="#f4efe6" stroke-width="3"/>
   <!-- 집게 -->
-  <path d="M43 17 L50 12 M43 17 L52 20" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M43 17 L50 12 M43 17 L52 20" stroke="#f4efe6" stroke-width="5" stroke-linecap="round"/>
   <!-- 눈 -->
-  <circle cx="43" cy="17" r="2.2" fill="#1f5fae"/>
+  <circle cx="43" cy="17" r="2.2" fill="#27241f"/>
+  <!-- 집게 앞의 물체 (사이트 링크색) - 만져서 이해한다는 뜻 -->
+  <circle cx="55" cy="15.5" r="3.2" fill="#6f97d6"/>
 </svg>
