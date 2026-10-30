@@ -48,5 +48,6 @@ model HistoryEntry {
   descriptionEn String?
   link          String?
   tags          String? // 쉼표로 구분
+  thumbnail     String? // 프로젝트 썸네일 (JPEG data URL)
   createdAt     DateTime @default(now())
 }

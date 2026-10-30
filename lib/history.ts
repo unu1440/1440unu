@@ -32,6 +32,7 @@ export type HistoryInput = {
   descriptionEn: string | null;
   link: string | null;
   tags: string | null;
+  thumbnail: string | null;
 };
 
 function optionalText(value: unknown) {
@@ -42,7 +43,7 @@ function optionalText(value: unknown) {
 export function parseHistoryBody(
   body: Record<string, unknown>
 ): { data: HistoryInput } | { error: string } {
-  const { type, title, titleEn, org, orgEn, period, sortDate, description, descriptionEn, link, tags } = body;
+  const { type, title, titleEn, org, orgEn, period, sortDate, description, descriptionEn, link, tags, thumbnail } = body;
 
   if (!HISTORY_TYPES.includes(type as SectionKey)) {
     return { error: "섹션 구분이 올바르지 않습니다." };
@@ -71,6 +72,12 @@ export function parseHistoryBody(
     return { error: "링크는 http(s):// 로 시작해야 합니다." };
   }
 
+  // 썸네일: 브라우저에서 줄인 JPEG data URL만 허용 (줄인 결과는 보통 100KB 안팎, 넉넉히 1.5MB까지)
+  const thumbnailValue = typeof thumbnail === "string" && thumbnail ? thumbnail : null;
+  if (thumbnailValue && (!thumbnailValue.startsWith("data:image/jpeg;base64,") || thumbnailValue.length > 1_500_000)) {
+    return { error: "썸네일 이미지가 올바르지 않거나 너무 큽니다." };
+  }
+
   return {
     data: {
       type: type as SectionKey,
@@ -84,6 +91,7 @@ export function parseHistoryBody(
       descriptionEn: optionalText(descriptionEn),
       link: linkValue,
       tags: optionalText(tags),
+      thumbnail: thumbnailValue,
     },
   };
 }

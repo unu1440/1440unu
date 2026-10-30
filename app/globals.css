@@ -1,31 +1,33 @@
 /* ==========================================================================
-   1440unu.com - 흰 바탕, 글꼴은 Pretendard 하나, 링크만 파란색
+   1440unu.com - 살짝 따뜻한 흰 바탕, 영문 본문은 LaTeX 글꼴(CMU Serif), 한글과 메뉴·날짜는 Pretendard, 링크만 파란색
+   회색은 푸른 기 없는 따뜻한 회색으로 맞춰서 차갑게 보이지 않게 함
    다크 모드는 시스템 설정을 따름
    ========================================================================== */
 :root {
-  --bg: #ffffff;
-  --panel: #f3f3f2;
-  --panel-2: #e8e8e6;
-  --ink: #1d1d1c;
-  --ink-dim: #6c6c69;
-  --line: #e4e4e1;
-  --accent: #1f5fae;
-  --accent-soft: #eaf1fa;
+  --bg: #fffefb;
+  --panel: #f5f2ec;
+  --panel-2: #ebe6dd;
+  --ink: #27241f;
+  --ink-dim: #77716a;
+  --line: #ebe6de;
+  --accent: #2a5ea8;
+  --accent-soft: #e9eff8;
   --danger: #b03a3a;
 
   --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --serif: "CMU Serif", "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", serif;
 
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #141414;
-    --panel: #1d1d1d;
-    --panel-2: #2a2a2a;
-    --ink: #e7e7e5;
-    --ink-dim: #9b9b97;
-    --line: #2d2d2c;
+    --bg: #171614;
+    --panel: #201e1b;
+    --panel-2: #2c2925;
+    --ink: #ebe6de;
+    --ink-dim: #a29b91;
+    --line: #2f2c28;
     --accent: #8db4ec;
     --accent-soft: #1c2533;
     --danger: #e08a8a;
@@ -52,6 +54,13 @@ body {
   -webkit-font-smoothing: antialiased;
   word-break: keep-all;
 }
+
+::selection { background: var(--accent-soft); color: var(--ink); }
+
+/* 위쪽(사람 소개)은 Pretendard, 이름과 아래쪽 CV 영역만 논문처럼 LaTeX 글꼴(한글은 Pretendard로 넘어감)
+   CV 안에서도 날짜·구분·버튼·편집 폼은 Pretendard */
+.side-name, .cv { font-family: var(--serif); }
+.cv .meta, .cv .tags, .cv .tl-kind, .cv button, .cv .editor-form { font-family: var(--sans); }
 
 a {
   color: inherit;
@@ -194,12 +203,12 @@ button:focus-visible {
 
 .content { min-width: 0; }
 
-/* 슬로건 - 본문 맨 위 한 줄 */
+/* 슬로건 - 소개 제목 바로 아래, 자기소개보다 조금 크게 */
 .slogan {
-  font-size: clamp(22px, 3.2vw, 28px);
-  font-weight: 700;
-  line-height: 1.4;
-  margin: 0 0 36px;
+  font-size: clamp(19px, 2.4vw, 22px);
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0 0 14px;
 }
 
 .block { padding: 0 0 44px; }
@@ -262,9 +271,42 @@ button:focus-visible {
   padding: 0;
 }
 
-/* 프로젝트 - 위아래 선으로만 나눈 목록 */
-.projects > li { position: relative; padding: 14px 0; border-top: 1px solid var(--line); }
+/* 프로젝트 - 작은 썸네일 + 제목·요약 한 줄씩, 누르면 팝업 */
+.projects > li { position: relative; padding: 12px 0; border-top: 1px solid var(--line); }
 .projects > li:first-child { border-top: none; padding-top: 0; }
+
+/* 목록 한 줄 전체가 버튼 - 전역 버튼 모양은 지움 */
+.project {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  background: none;
+  color: inherit;
+  border-radius: 0;
+  font: inherit;
+  text-align: left;
+}
+.project:hover { opacity: 1; }
+.project:hover .project-title { color: var(--accent); }
+
+.project-thumb {
+  display: block;
+  width: 112px;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 479px) {
+  .project { grid-template-columns: 84px minmax(0, 1fr); gap: 12px; }
+  .project-thumb { width: 84px; }
+}
+
+.project-text { display: block; min-width: 0; }
 
 .project-head {
   display: flex;
@@ -274,7 +316,8 @@ button:focus-visible {
   gap: 2px 16px;
 }
 
-.project h3,
+.project-title,
+.project-dialog h3,
 .tl-item h3 {
   font-size: 16.5px;
   font-weight: 600;
@@ -282,12 +325,48 @@ button:focus-visible {
   margin: 0;
 }
 
+.project-sub { display: block; }
 .project-sub { font-size: 15px; color: var(--ink-dim); margin: 2px 0 0; }
+
+/* 프로젝트 팝업 */
+.project-dialog {
+  width: min(640px, calc(100% - 32px));
+  max-height: calc(100% - 48px);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.project-dialog::backdrop { background: rgba(20, 18, 15, 0.45); }
+.dialog-body { padding: 22px 24px 24px; }
+.dialog-image {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  background: var(--panel);
+  border-radius: 4px;
+  margin-bottom: 18px;
+}
+.project-dialog h3 { font-size: 19px; }
+.project-dialog .desc { margin-top: 12px; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+.dialog-actions .btn { text-decoration: none; }
 .tags { font-size: 13.5px; color: var(--ink-dim); margin: 6px 0 0; }
+
+/* CV 영역 - 위와 선으로 나누고, 섹션 제목은 조금 작게, 간격은 촘촘하게 */
+.cv { border-top: 1px solid var(--ink); padding-top: 18px; }
+.cv-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.cv-head h2 { font-size: 22px; font-weight: 700; margin: 0; }
+.cv-head a { font-family: var(--sans); font-size: 14px; color: var(--accent); }
+.cv-head a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cv .block { padding-bottom: 32px; }
+.cv .block-title { font-size: 17px; margin-bottom: 12px; }
 
 /* 학력과 경력: 왼쪽 세로선 + 점 (최신이 위, 맨 위 점만 채움) */
 .timeline { padding-left: 26px; }
-.timeline > li { position: relative; padding-bottom: 24px; }
+.timeline > li { position: relative; padding-bottom: 18px; }
 .timeline > li:last-child { padding-bottom: 0; }
 
 .timeline > li::before {
@@ -420,6 +499,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .photo-field { display: flex; align-items: center; gap: 16px; }
 .photo-preview { display: block; width: 88px; aspect-ratio: 1 / 1; border-radius: 6px; object-fit: cover; }
+.thumb-preview { display: block; width: 128px; aspect-ratio: 16 / 10; border-radius: 4px; object-fit: cover; }
 .photo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
 
 /* ---------- print: 이 페이지를 그대로 CV로 인쇄 ---------- */
@@ -434,7 +514,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   .side { position: static; margin-bottom: 24px; }
   .side-photo { width: 96px; }
   .lang-switch { display: none; }
-  .slogan { font-size: 16pt; margin-bottom: 20px; }
+  .slogan { font-size: 13pt; margin-bottom: 10px; }
   .block { padding-bottom: 20px; break-inside: avoid-page; }
   a { text-decoration: none !important; }
 }

@@ -3,36 +3,9 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ProfileData } from "@/lib/portfolio";
+import { toJpeg } from "@/lib/image";
 
 const PHOTO_SIZE = 512;
-
-// 업로드한 사진을 가운데 기준 정사각형으로 잘라 512px JPEG data URL로 변환
-// (원본 그대로 DB에 넣으면 용량이 커지고 Vercel 요청 크기 제한에도 걸림)
-async function toSquareJpeg(file: File): Promise<string> {
-  const bitmap = await createImageBitmap(file);
-  const side = Math.min(bitmap.width, bitmap.height);
-  const out = Math.min(PHOTO_SIZE, side);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = out;
-  canvas.height = out;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("canvas unavailable");
-
-  ctx.drawImage(
-    bitmap,
-    (bitmap.width - side) / 2,
-    (bitmap.height - side) / 2,
-    side,
-    side,
-    0,
-    0,
-    out,
-    out
-  );
-  bitmap.close();
-  return canvas.toDataURL("image/jpeg", 0.85);
-}
 
 type TextKey = Exclude<keyof ProfileData, "photo">;
 
@@ -79,7 +52,7 @@ export default function ProfileEditor({ profile, onClose }: { profile: ProfileDa
     if (!file) return;
     setError("");
     try {
-      setPhoto(await toSquareJpeg(file));
+      setPhoto(await toJpeg(file, { maxSize: PHOTO_SIZE, square: true }));
       setMessage("");
     } catch {
       setError("이미지를 읽을 수 없습니다. JPG/PNG/WebP 파일인지 확인해 주세요.");

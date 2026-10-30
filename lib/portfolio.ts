@@ -36,6 +36,7 @@ export type EntryItem = {
   descriptionEn: string | null;
   link: string | null;
   tags: string | null;
+  thumbnail: string | null;
 };
 
 const PROFILE_KEYS = [
@@ -64,6 +65,7 @@ type EntryRow = {
   descriptionEn?: string | null;
   link?: string | null;
   tags?: string | null;
+  thumbnail?: string | null;
 };
 
 function toEntry(row: EntryRow): EntryItem {
@@ -80,6 +82,7 @@ function toEntry(row: EntryRow): EntryItem {
     descriptionEn: row.descriptionEn ?? null,
     link: row.link ?? null,
     tags: row.tags ?? null,
+    thumbnail: row.thumbnail ?? null,
   };
 }
 

@@ -16,6 +16,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
         />
+        {/* 본문 영문: CMU Serif(LaTeX 기본 글꼴 Computer Modern의 웹용) - 한글은 글자가 없어서 Pretendard로 넘어감 */}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern@0.1.3/cmu-serif.css" />
       </head>
       <body>
         <div className="shell">

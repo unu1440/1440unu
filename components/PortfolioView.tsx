@@ -98,7 +98,12 @@ export default function PortfolioView({ lang, profile, entries }: Props) {
       <div className="portfolio">
         <aside className="side">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {profile.photo ? <img className="side-photo" src={profile.photo} alt={name} /> : <div className="side-photo photo-empty" aria-hidden />}
+          {/* 사진이 없으면 빈 회색 칸 대신 아예 안 보여줌 (관리자에게만 자리 표시) */}
+          {profile.photo ? (
+            <img className="side-photo" src={profile.photo} alt={name} />
+          ) : (
+            isAdmin && <div className="side-photo photo-empty" aria-hidden />
+          )}
           <h1 className="side-name">{name}</h1>
           {subName && <p className="side-name-en">{subName}</p>}
           {profile.tagline && <p className="side-tagline">{pick(lang, profile.tagline, profile.taglineEn)}</p>}
@@ -119,10 +124,9 @@ export default function PortfolioView({ lang, profile, entries }: Props) {
         <div className="content">
           {isAdmin && editingProfile && <ProfileEditor profile={profile} onClose={() => setEditingProfile(false)} />}
 
-          {slogan && <p className="slogan">{slogan}</p>}
-
           <section className="block" id="about">
             <h2 className="block-title">{ui.about}</h2>
+            {slogan && <p className="slogan">{slogan}</p>}
             {bio ? (
               <div className="bio">
                 {bio.split(/\n{2,}/).map((para, i) => (
@@ -156,18 +160,26 @@ export default function PortfolioView({ lang, profile, entries }: Props) {
             </section>
           )}
 
-          {background.visible && (
-            <EntrySection lang={lang} section={background.section} items={background.items} isAdmin={isAdmin} />
-          )}
+          {/* 여기부터 CV - 위쪽(사람 소개)과 선으로 나누고, 글꼴·간격을 서류처럼 */}
+          {(background.visible || certifications.visible) && (
+            <div className="cv">
+              <div className="cv-head">
+                <h2>CV</h2>
+                {profile.cvUrl && (
+                  <a href={profile.cvUrl} target="_blank" rel="noreferrer">
+                    {ui.cvPdf}
+                  </a>
+                )}
+              </div>
 
-          {certifications.visible && (
-            <EntrySection
-              lang={lang}
-              section={certifications.section}
-              items={certifications.items}
-             
-              isAdmin={isAdmin}
-            />
+              {background.visible && (
+                <EntrySection lang={lang} section={background.section} items={background.items} isAdmin={isAdmin} />
+              )}
+
+              {certifications.visible && (
+                <EntrySection lang={lang} section={certifications.section} items={certifications.items} isAdmin={isAdmin} />
+              )}
+            </div>
           )}
         </div>
       </div>
