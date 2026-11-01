@@ -1,3 +1,4 @@
+import { parsePostLinks } from "@/lib/post-utils";
 import { prisma } from "@/lib/prisma";
 
 // 블로그 글은 categoryId로 카테고리에 연결됨. 옛 블로그 글은 categoryId가 비어 있어 DB에만 남아 있음
@@ -16,6 +17,7 @@ export type PostItem = {
   categoryId: string | null;
   thumbnail: string | null;
   tags: string[];
+  links: string; // 한 줄에 하나 "이름 | 주소"
   createdAt: string; // ISO 문자열
 };
 
@@ -44,9 +46,9 @@ def stiffness(force, depth):
 
 // DB 없이 개발할 때만 보이는 예시 글
 const SAMPLE_POSTS: PostItem[] = [
-  { id: "sample-1", slug: "sample-tactile", title: "🤖 촉각 센서 시뮬레이션을 시작하며", excerpt: "개발 글의 요약은 이렇게 한 줄로 보입니다.", content: SAMPLE_MARKDOWN, published: true, category: "개발", categoryId: "sample-dev", thumbnail: "/icon.svg", tags: ["Robotics", "Simulation"], createdAt: "2026-11-01T00:00:00.000Z" },
-  { id: "sample-2", slug: "sample-daily", title: "☕ 복학하고 첫 학기를 보내며", excerpt: "일상 글도 같은 모양으로 놓입니다.", content: "문단은 빈 줄로 나눕니다.", published: true, category: "일상", categoryId: "sample-life", thumbnail: null, tags: ["회고"], createdAt: "2026-10-20T00:00:00.000Z" },
-  { id: "sample-3", slug: "sample-memo", title: "요약이 없는 글", excerpt: null, content: "요약은 비워 둘 수 있습니다.", published: true, category: "일상", categoryId: "sample-life", thumbnail: null, tags: [], createdAt: "2026-10-02T00:00:00.000Z" },
+  { id: "sample-1", slug: "sample-tactile", title: "🤖 촉각 센서 시뮬레이션을 시작하며", excerpt: "개발 글의 요약은 이렇게 한 줄로 보입니다.", content: SAMPLE_MARKDOWN, published: true, category: "개발", categoryId: "sample-dev", thumbnail: "/icon.svg", tags: ["Robotics", "Simulation"], links: "프로젝트 저장소 | https://github.com/unu1440", createdAt: "2026-11-01T00:00:00.000Z" },
+  { id: "sample-2", slug: "sample-daily", title: "☕ 복학하고 첫 학기를 보내며", excerpt: "일상 글도 같은 모양으로 놓입니다.", content: "문단은 빈 줄로 나눕니다.", published: true, category: "일상", categoryId: "sample-life", thumbnail: null, tags: ["회고"], links: "", createdAt: "2026-10-20T00:00:00.000Z" },
+  { id: "sample-3", slug: "sample-memo", title: "요약이 없는 글", excerpt: null, content: "요약은 비워 둘 수 있습니다.", published: true, category: "일상", categoryId: "sample-life", thumbnail: null, tags: [], links: "", createdAt: "2026-10-02T00:00:00.000Z" },
 ];
 
 type PostRow = {
@@ -60,6 +62,7 @@ type PostRow = {
   categoryRef: { name: string } | null;
   thumbnail: string | null;
   tags: string | null;
+  links: string | null;
   createdAt: Date;
 };
 
@@ -75,6 +78,7 @@ function toPost(row: PostRow): PostItem {
     categoryId: row.categoryId,
     thumbnail: row.thumbnail,
     tags: (row.tags ?? "").split(",").map((t) => t.trim()).filter(Boolean),
+    links: row.links ?? "",
     createdAt: row.createdAt.toISOString(),
   };
 }
@@ -145,6 +149,7 @@ export function parsePostBody(body: Record<string, unknown>) {
   const tagList = typeof body.tags === "string" ? body.tags.split(",").map((t) => t.trim()).filter(Boolean) : [];
   const tags = Array.from(new Set(tagList)).join(", ");
   const thumbnail = typeof body.thumbnail === "string" ? body.thumbnail : null;
+  const links = typeof body.links === "string" ? body.links.trim() : "";
 
   if (!title || !content) return { error: "제목과 본문은 필수입니다." };
   if (!categoryId) return { error: "카테고리를 골라 주세요." };
@@ -152,12 +157,16 @@ export function parsePostBody(body: Record<string, unknown>) {
   if (excerpt.length > 300) return { error: "요약이 너무 깁니다." };
   if (content.length > 50000) return { error: "본문이 너무 깁니다." };
   if (tags.length > 300) return { error: "해시태그가 너무 많습니다." };
+  if (links.length > 2000) return { error: "링크가 너무 많습니다." };
+  if (links && parsePostLinks(links).length !== links.split("\n").filter((line) => line.trim()).length) {
+    return { error: "링크는 http로 시작하는 주소만 넣을 수 있습니다." };
+  }
   if (thumbnail && (!thumbnail.startsWith("data:image/jpeg;base64,") || thumbnail.length > THUMBNAIL_MAX)) {
     return { error: "썸네일을 저장할 수 없습니다. 더 작은 사진을 올려 주세요." };
   }
 
   return {
-    data: { title, content, excerpt: excerpt || null, categoryId, tags: tags || null, thumbnail, published: body.published !== false },
+    data: { title, content, excerpt: excerpt || null, categoryId, tags: tags || null, thumbnail, links: links || null, published: body.published !== false },
   };
 }
 

@@ -76,6 +76,7 @@ model Post {
   categoryRef  Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   tags         String? // 쉼표로 구분
   thumbnail    String? // 썸네일 (JPEG data URL)
+  links        String? // 글 맨 밑 링크, 한 줄에 하나 "이름 | 주소"
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }

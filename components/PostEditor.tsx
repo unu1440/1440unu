@@ -23,7 +23,7 @@ const TOOLS = [
   { label: "표", before: "| 제목 | 제목 |\n|---|---|\n| 내용 | 내용 |\n", after: "" },
 ];
 
-type Draft = { title: string; excerpt: string; categoryId: string; tags: string; content: string };
+type Draft = { title: string; excerpt: string; categoryId: string; tags: string; content: string; links: string };
 
 function readDraft(key: string): Draft | null {
   try {
@@ -45,6 +45,7 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
   const [excerpt, setExcerpt] = useState(draft?.excerpt ?? post?.excerpt ?? "");
   const [categoryId, setCategoryId] = useState(draft?.categoryId ?? post?.categoryId ?? categories[0]?.id ?? "");
   const [tags, setTags] = useState(draft?.tags ?? post?.tags.join(", ") ?? "");
+  const [links, setLinks] = useState(draft?.links ?? post?.links ?? "");
   const [content, setContent] = useState(draft?.content ?? post?.content ?? "");
   const [thumbnail, setThumbnail] = useState(post?.thumbnail ?? null);
   const [published, setPublished] = useState(post?.published ?? true);
@@ -55,13 +56,13 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
-        localStorage.setItem(draftKey, JSON.stringify({ title, excerpt, categoryId, tags, content }));
+        localStorage.setItem(draftKey, JSON.stringify({ title, excerpt, categoryId, tags, content, links }));
       } catch {
         // 저장 공간을 못 쓰는 브라우저에서는 임시저장 없이 진행
       }
     }, 1000);
     return () => clearTimeout(timer);
-  }, [draftKey, title, excerpt, categoryId, tags, content]);
+  }, [draftKey, title, excerpt, categoryId, tags, content, links]);
 
   function clearDraft() {
     try {
@@ -94,7 +95,7 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
     const res = await fetch(post ? `/api/posts/${post.id}` : "/api/posts", {
       method: post ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, excerpt, categoryId, tags, thumbnail, content, published }),
+      body: JSON.stringify({ title, excerpt, categoryId, tags, thumbnail, content, links, published }),
     }).catch(() => null);
     const data = res ? await res.json().catch(() => ({})) : {};
     setSaving(false);
@@ -124,6 +125,7 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
               setTitle(post?.title ?? "");
               setExcerpt(post?.excerpt ?? "");
               setTags(post?.tags.join(", ") ?? "");
+              setLinks(post?.links ?? "");
               setContent(post?.content ?? "");
               setRestored(false);
             }}
@@ -195,6 +197,16 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
         </div>
       </div>
 
+      <label>
+        링크 (한 줄에 하나: 이름 | 주소)
+        <textarea
+          className="plain"
+          rows={3}
+          value={links}
+          onChange={(e) => setLinks(e.target.value)}
+          placeholder="GitHub 저장소 | https://github.com/..."
+        />
+      </label>
       <label className="post-check">
         <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} />
         공개

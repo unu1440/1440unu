@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import PostAdmin from "@/components/PostAdmin";
 import SiteHeader from "@/components/SiteHeader";
 import { requireAdmin } from "@/lib/auth";
-import { formatPostDate, readingMinutes } from "@/lib/post-utils";
+import { formatPostDate, parsePostLinks, readingMinutes } from "@/lib/post-utils";
 import { loadCategories, loadPost } from "@/lib/posts";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +25,7 @@ export default async function PostPage({ params }: Props) {
   const post = await loadPost(params.slug, isAdmin);
   if (!post) notFound();
   const categories = isAdmin ? await loadCategories() : [];
+  const postLinks = parsePostLinks(post.links);
 
   return (
     <>
@@ -48,6 +49,20 @@ export default async function PostPage({ params }: Props) {
             {post.content}
           </Markdown>
         </div>
+        {postLinks.length > 0 && (
+          <section className="post-links">
+            <h2>링크</h2>
+            <ul>
+              {postLinks.map((link) => (
+                <li key={link.href}>
+                  <a href={link.href} target="_blank" rel="noreferrer">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         {isAdmin && <PostAdmin post={post} categories={categories} />}
       </main>
     </>
