@@ -33,7 +33,12 @@ export type HistoryInput = {
   link: string | null;
   tags: string | null;
   thumbnail: string | null;
+  images?: string[];
 };
+
+// 프로젝트 팝업 사진 제한 - Vercel 요청 본문 한도(4.5MB) 안에 들어가게 전체 크기를 묶음
+const MAX_IMAGES = 8;
+const MAX_IMAGES_SIZE = 4_000_000;
 
 function optionalText(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
@@ -43,7 +48,7 @@ function optionalText(value: unknown) {
 export function parseHistoryBody(
   body: Record<string, unknown>
 ): { data: HistoryInput } | { error: string } {
-  const { type, title, titleEn, org, orgEn, period, sortDate, description, descriptionEn, link, tags, thumbnail } = body;
+  const { type, title, titleEn, org, orgEn, period, sortDate, description, descriptionEn, link, tags, thumbnail, images } = body;
 
   if (!HISTORY_TYPES.includes(type as SectionKey)) {
     return { error: "섹션 구분이 올바르지 않습니다." };
@@ -78,6 +83,18 @@ export function parseHistoryBody(
     return { error: "썸네일 이미지가 올바르지 않거나 너무 큽니다." };
   }
 
+  // 추가 사진: 보내지 않으면(undefined) 기존 사진을 그대로 둠
+  if (images !== undefined) {
+    const valid = Array.isArray(images) && images.every((v) => typeof v === "string" && v.startsWith("data:image/jpeg;base64,"));
+    if (!valid || images.length > MAX_IMAGES) {
+      return { error: `사진은 ${MAX_IMAGES}장까지 올릴 수 있습니다.` };
+    }
+    const total = (images as string[]).reduce((sum, v) => sum + v.length, thumbnailValue?.length ?? 0);
+    if (total > MAX_IMAGES_SIZE) {
+      return { error: "사진 용량이 너무 큽니다. 몇 장을 빼고 저장해 주세요." };
+    }
+  }
+
   return {
     data: {
       type: type as SectionKey,
@@ -92,6 +109,7 @@ export function parseHistoryBody(
       link: linkValue,
       tags: optionalText(tags),
       thumbnail: thumbnailValue,
+      ...(images !== undefined ? { images: images as string[] } : {}),
     },
   };
 }

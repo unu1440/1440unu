@@ -14,6 +14,8 @@ export const UI = {
     github: "GitHub 저장소 보기",
     projectLink: "프로젝트 링크 열기",
     close: "닫기",
+    prevImage: "이전 사진",
+    nextImage: "다음 사진",
     blog: "Blog",
   },
   en: {
@@ -26,6 +28,8 @@ export const UI = {
     github: "View on GitHub",
     projectLink: "Open project link",
     close: "Close",
+    prevImage: "Previous image",
+    nextImage: "Next image",
     blog: "Blog",
   },
 } as const;

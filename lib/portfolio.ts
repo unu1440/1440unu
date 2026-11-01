@@ -91,7 +91,14 @@ export async function loadPortfolio() {
   try {
     const [profile, entries] = await Promise.all([
       prisma.profile.findUnique({ where: { id: "me" } }),
-      prisma.historyEntry.findMany({ orderBy: { sortDate: "desc" } }),
+      prisma.historyEntry.findMany({
+        orderBy: { sortDate: "desc" },
+        // 추가 사진은 크기가 커서 페이지에 싣지 않음 (팝업을 열 때 /api/history/[id]/images로 불러옴)
+        select: {
+          id: true, type: true, title: true, titleEn: true, org: true, orgEn: true, period: true, sortDate: true,
+          description: true, descriptionEn: true, link: true, tags: true, thumbnail: true,
+        },
+      }),
     ]);
     return { profile: toProfile(profile), entries: entries.map(toEntry) };
   } catch (error) {

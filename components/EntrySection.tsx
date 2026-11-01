@@ -38,9 +38,32 @@ function EntryForm({
   const [tags, setTags] = useState(entry?.tags ?? "");
   const [thumbnail, setThumbnail] = useState<string | null>(entry?.thumbnail ?? null);
   const thumbRef = useRef<HTMLInputElement>(null);
+  // 추가 사진: 수정할 때는 불러온 뒤에야 저장에 포함 (불러오기 전에 저장해도 기존 사진이 지워지지 않게)
+  const [images, setImages] = useState<string[] | null>(entry ? null : []);
+  const imagesRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (!entry || type !== "project") return;
+    fetch(`/api/history/${entry.id}/images`)
+      .then((res) => res.json())
+      .then((data) => setImages(data.images ?? []))
+      .catch(() => setError("추가 사진을 불러오지 못했습니다."));
+  }, [entry, type]);
+
+  async function handleImages(files: FileList | null) {
+    if (!files) return;
+    setError("");
+    try {
+      const added = await Promise.all(Array.from(files).map((file) => toJpeg(file, { maxSize: THUMB_SIZE })));
+      setImages((current) => [...(current ?? []), ...added]);
+    } catch {
+      setError("이미지를 읽을 수 없습니다. JPG/PNG/WebP 파일인지 확인해 주세요.");
+    }
+    if (imagesRef.current) imagesRef.current.value = "";
+  }
 
   async function handleThumbnail(file: File | undefined) {
     if (!file) return;
@@ -74,6 +97,7 @@ function EntryForm({
         link,
         tags,
         thumbnail: type === "project" ? thumbnail : null,
+        ...(type === "project" && images ? { images } : {}),
       }),
     });
 
@@ -174,6 +198,28 @@ function EntryForm({
           <input ref={thumbRef} type="file" accept="image/*" hidden onChange={(e) => handleThumbnail(e.target.files?.[0])} />
         </div>
       )}
+      {type === "project" && (
+        <div className="images-field">
+          <p className="images-label">팝업 추가 사진 (썸네일 다음에 화살표로 넘겨 봄). 규격은 16:10 (예: 960×600), 다른 비율은 가장자리가 잘림</p>
+          {images && images.length > 0 && (
+            <ul className="images-list">
+              {images.map((src, i) => (
+                <li key={i}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt={`추가 사진 ${i + 1}`} />
+                  <button className="btn-link danger" type="button" onClick={() => setImages(images.filter((_, n) => n !== i))}>
+                    삭제
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <button className="btn-ghost" type="button" disabled={!images} onClick={() => imagesRef.current?.click()}>
+            {images ? "사진 추가" : "불러오는 중..."}
+          </button>
+          <input ref={imagesRef} type="file" accept="image/*" multiple hidden onChange={(e) => handleImages(e.target.files)} />
+        </div>
+      )}
       {error && <p className="form-error">{error}</p>}
       <div className="editor-actions">
         <button type="submit" disabled={saving}>
@@ -261,10 +307,19 @@ function ProjectDialog({ lang, entry, onClose }: { lang: Lang; entry: EntryItem;
   const description = entry.description ? pick(lang, entry.description, entry.descriptionEn) : null;
   const tags = splitTags(entry.tags);
   const isGithub = entry.link ? /^https?:\/\/(www\.)?github\.com\//.test(entry.link) : false;
+  // 팝업 사진: 썸네일이 첫 장, 추가 사진은 팝업을 열 때 불러옴
+  const [extra, setExtra] = useState<string[]>([]);
+  const [index, setIndex] = useState(0);
+  const slides = [...(entry.thumbnail ? [entry.thumbnail] : []), ...extra];
+  const move = (step: number) => setIndex((i) => (i + step + slides.length) % slides.length);
 
   useEffect(() => {
     ref.current?.showModal();
-  }, []);
+    fetch(`/api/history/${entry.id}/images`)
+      .then((res) => res.json())
+      .then((data) => setExtra(data.images ?? []))
+      .catch(() => setExtra([]));
+  }, [entry.id]);
 
   return (
     <dialog
@@ -275,10 +330,32 @@ function ProjectDialog({ lang, entry, onClose }: { lang: Lang; entry: EntryItem;
       onClick={(e) => {
         if (e.target === ref.current) ref.current.close();
       }}
+      onKeyDown={(e) => {
+        if (slides.length < 2) return;
+        if (e.key === "ArrowLeft") move(-1);
+        if (e.key === "ArrowRight") move(1);
+      }}
     >
       <div className="dialog-body">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        {entry.thumbnail && <img className="dialog-image" src={entry.thumbnail} alt="" />}
+        {slides.length > 0 && (
+          <div className="dialog-gallery">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="dialog-image" src={slides[index]} alt="" />
+            {slides.length > 1 && (
+              <>
+                <button className="gallery-arrow prev" type="button" aria-label={ui.prevImage} onClick={() => move(-1)}>
+                  ‹
+                </button>
+                <button className="gallery-arrow next" type="button" aria-label={ui.nextImage} onClick={() => move(1)}>
+                  ›
+                </button>
+                <span className="gallery-count">
+                  {index + 1} / {slides.length}
+                </span>
+              </>
+            )}
+          </div>
+        )}
         <div className="project-head">
           <h3>{pick(lang, entry.title, entry.titleEn)}</h3>
           <span className="meta">{periodText(lang, entry.period)}</span>

@@ -281,8 +281,8 @@ button:focus-visible {
 /* 목록 한 줄 전체가 버튼 - 전역 버튼 모양은 지움 */
 .project {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 18px;
   align-items: center;
   width: 100%;
   padding: 0;
@@ -297,7 +297,7 @@ button:focus-visible {
 
 .project-thumb {
   display: block;
-  width: 112px;
+  width: 160px;
   aspect-ratio: 16 / 10;
   object-fit: cover;
   border-radius: 4px;
@@ -305,8 +305,8 @@ button:focus-visible {
 }
 
 @media (max-width: 479px) {
-  .project { grid-template-columns: 84px minmax(0, 1fr); gap: 12px; }
-  .project-thumb { width: 84px; }
+  .project { grid-template-columns: 112px minmax(0, 1fr); gap: 12px; }
+  .project-thumb { width: 112px; }
 }
 
 .project-text { display: block; min-width: 0; }
@@ -343,14 +343,36 @@ button:focus-visible {
 }
 .project-dialog::backdrop { background: rgba(20, 18, 15, 0.45); }
 .dialog-body { padding: 22px 24px 24px; }
-.dialog-image {
-  display: block;
-  width: 100%;
-  max-height: 360px;
-  object-fit: contain;
-  background: var(--panel);
+/* 사진 규격은 16:10 하나 - 넘겨도 높이가 그대로라 아래 글이 움직이지 않음 */
+.dialog-gallery { position: relative; aspect-ratio: 16 / 10; margin-bottom: 18px; }
+.dialog-image { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  padding: 0 0 3px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: #fff;
+  color: #1d1d1c;
+  font-size: 30px;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.gallery-arrow:hover { background: var(--accent); border-color: var(--accent); color: #fff; opacity: 1; }
+.gallery-arrow.prev { left: 10px; }
+.gallery-arrow.next { right: 10px; }
+.gallery-count {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 2px 8px;
   border-radius: 4px;
-  margin-bottom: 18px;
+  background: rgba(20, 18, 15, 0.55);
+  color: #fff;
+  font-size: 13px;
 }
 .project-dialog h3 { font-size: 19px; }
 .project-dialog .desc { margin-top: 12px; }
@@ -502,8 +524,13 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .photo-field { display: flex; align-items: center; gap: 16px; }
 .photo-preview { display: block; width: 88px; aspect-ratio: 1 / 1; border-radius: 6px; object-fit: cover; }
-.thumb-preview { display: block; width: 128px; aspect-ratio: 16 / 10; border-radius: 4px; object-fit: cover; }
+.thumb-preview { display: block; width: 160px; aspect-ratio: 16 / 10; border-radius: 4px; object-fit: cover; }
 .photo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
+.images-field { display: grid; justify-items: start; gap: 8px; }
+.images-label { margin: 0; font-size: 14px; color: var(--ink-dim); }
+.images-list { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.images-list li { display: grid; justify-items: center; gap: 2px; }
+.images-list img { display: block; width: 96px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 4px; }
 
 /* 블로그 - 글 읽기에 맞는 폭, 장식 없이 날짜와 제목만 */
 .blog { max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
