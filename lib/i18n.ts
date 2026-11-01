@@ -14,6 +14,7 @@ export const UI = {
     github: "GitHub 저장소 보기",
     projectLink: "프로젝트 링크 열기",
     close: "닫기",
+    blog: "Blog",
   },
   en: {
     about: "About",
@@ -25,6 +26,7 @@ export const UI = {
     github: "View on GitHub",
     projectLink: "Open project link",
     close: "Close",
+    blog: "Blog",
   },
 } as const;
 

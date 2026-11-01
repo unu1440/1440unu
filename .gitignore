@@ -14,3 +14,7 @@ tsconfig.tsbuildinfo
 
 # 로컬 작업 메모 (GitHub에 올리지 않음)
 CLAUDE.local.md
+
+# 로컬 시험 계정
+.env.local
+CLAUDE.md

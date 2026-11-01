@@ -198,6 +198,7 @@ button:focus-visible {
   overflow-wrap: anywhere;
 }
 .side-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.link-arrow { width: 0.72em; height: 0.72em; margin-left: 0.25em; vertical-align: 0; fill: none; stroke: currentColor; stroke-width: 1.2; }
 
 /* ---------- content blocks ---------- */
 
@@ -501,6 +502,72 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .photo-preview { display: block; width: 88px; aspect-ratio: 1 / 1; border-radius: 6px; object-fit: cover; }
 .thumb-preview { display: block; width: 128px; aspect-ratio: 16 / 10; border-radius: 4px; object-fit: cover; }
 .photo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
+
+/* 블로그 - 글 읽기에 맞는 폭, 장식 없이 날짜와 제목만 */
+.blog { max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
+.blog-title { font-size: 22px; font-weight: 600; margin: 0 0 24px; }
+.post-list { list-style: none; margin: 0; padding: 0; }
+.post-filters { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; margin-bottom: 12px; }
+.post-filters select, .post-filters input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; font-size: 14px; }
+.post-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.post-tag { padding: 4px 10px; background: var(--panel); color: var(--ink-dim); font-size: 13px; }
+.post-tag.on { background: var(--accent); color: var(--bg); }
+.post-count { color: var(--ink-dim); font-size: 14px; margin: 0 0 12px; }
+.post-list li { border-top: 1px solid var(--line); }
+.post-item { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 16px; border-left: 3px solid transparent; color: var(--ink); text-decoration: none; }
+.post-item:hover { border-left-color: var(--accent); color: var(--accent); text-decoration: none; }
+.post-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.post-cat { color: var(--ink-dim); font-size: 13px; }
+.post-item-title { font-size: 18px; font-weight: 600; line-height: 1.45; }
+.post-excerpt { color: var(--ink-dim); font-size: 15px; line-height: 1.6; }
+.post-item:hover .post-excerpt { color: inherit; }
+.post-thumb { flex: none; width: 112px; aspect-ratio: 16 / 10; border-radius: 4px; object-fit: cover; }
+@media (max-width: 560px) {
+  .post-item { padding: 16px 10px; gap: 12px; }
+  .post-thumb { width: 72px; aspect-ratio: 1 / 1; }
+}
+.post-date { color: var(--ink-dim); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.post-back { color: var(--ink-dim); font-size: 14px; }
+.post-head { padding: 16px 0 24px; border-bottom: 1px solid var(--line); }
+.post-meta { display: flex; flex-wrap: wrap; gap: 12px; color: var(--ink-dim); font-size: 14px; margin: 0 0 10px; }
+.post-title { font-size: clamp(26px, 5vw, 34px); font-weight: 700; line-height: 1.35; margin: 0; }
+.post-lead { color: var(--ink-dim); font-size: 17px; line-height: 1.6; margin: 12px 0 0; }
+.post-head-tags { color: var(--accent); font-size: 14px; margin: 12px 0 0; white-space: pre-wrap; }
+.post-body { margin: 28px 0 40px; line-height: 1.8; overflow-wrap: anywhere; }
+.post-body h2 { font-size: 22px; font-weight: 700; margin: 36px 0 12px; }
+.post-body h3 { font-size: 18px; font-weight: 600; margin: 28px 0 8px; }
+.post-body p, .post-body ul, .post-body ol, .post-body blockquote { margin: 0 0 16px; }
+.post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.post-body img { max-width: 100%; height: auto; border-radius: 4px; }
+.post-body blockquote { padding-left: 14px; border-left: 3px solid var(--line); color: var(--ink-dim); }
+.post-body code { padding: 2px 5px; border-radius: 4px; background: var(--panel); font-size: 0.9em; }
+.post-body pre { padding: 14px 16px; border-radius: 6px; background: var(--panel); overflow-x: auto; }
+.post-body pre code { padding: 0; background: none; }
+.post-body table { width: 100%; border-collapse: collapse; margin: 0 0 16px; }
+.post-body th, .post-body td { padding: 8px 10px; border: 1px solid var(--line); text-align: left; }
+.post-body .hljs-keyword, .post-body .hljs-built_in { color: var(--accent); }
+.post-body .hljs-string { color: var(--ink-dim); }
+.post-body .hljs-comment { color: var(--ink-dim); font-style: italic; }
+.post-admin { display: flex; align-items: center; gap: 12px; margin: 0 0 24px; }
+.editor-form .post-check { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.editor-form .post-check input { width: auto; }
+.cat-manager { margin: 0 0 24px; padding: 14px 16px; background: var(--panel); border-radius: 6px; }
+.cat-manager ul { list-style: none; margin: 0 0 12px; padding: 0; }
+.cat-manager li { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+.cat-manager li span { flex: 1; min-width: 0; }
+.cat-add { display: flex; flex-wrap: wrap; gap: 8px; }
+.cat-add input { flex: 1; min-width: 160px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; font-size: 14px; }
+/* 글쓰기 - 왼쪽 원문, 오른쪽 미리보기라서 글 읽는 폭보다 넓게 */
+.post-editor { position: relative; left: 50%; width: min(1120px, calc(100vw - 40px)); transform: translateX(-50%); }
+.post-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.post-tools button { padding: 6px 10px; font-size: 13px; }
+.post-write { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.post-write textarea { min-height: 460px; resize: vertical; }
+.post-preview { margin: 0; padding: 12px 14px; max-height: 620px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; }
+@media (max-width: 760px) {
+  .post-write { grid-template-columns: minmax(0, 1fr); }
+  .post-write textarea { min-height: 320px; }
+}
 
 /* ---------- print: 이 페이지를 그대로 CV로 인쇄 ---------- */
 

@@ -69,6 +69,7 @@ export default function PortfolioView({ lang, profile, entries }: Props) {
   const links = [
     profile.email && { href: `mailto:${profile.email}`, value: profile.email },
     profile.github && { href: profile.github, value: profile.github.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") },
+    { href: "/blog", value: ui.blog },
     profile.scholar && { href: profile.scholar, value: "Google Scholar" },
     profile.cvUrl && { href: profile.cvUrl, value: ui.cvValue },
   ].filter(Boolean) as { href: string; value: string }[];
@@ -108,8 +109,13 @@ export default function PortfolioView({ lang, profile, entries }: Props) {
             <ul className="side-links">
               {links.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} target={link.href.startsWith("mailto:") ? undefined : "_blank"} rel="noreferrer">
+                  <a href={link.href} target={link.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">
                     {link.value}
+                    {link.href === "/blog" && (
+                      <svg className="link-arrow" viewBox="0 0 10 10" aria-hidden="true">
+                        <path d="M2 8 8 2M3 2h5v5" />
+                      </svg>
+                    )}
                   </a>
                 </li>
               ))}
