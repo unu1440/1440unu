@@ -17,7 +17,7 @@ const TOOLS = [
   { label: "목록", before: "- ", after: "" },
   { label: "번호", before: "1. ", after: "" },
   { label: "링크", before: "[", after: "](https://)" },
-  { label: "사진", before: "![설명](", after: ")" },
+  { label: "사진 주소", before: "![설명](", after: ")" },
   { label: "코드", before: "`", after: "`" },
   { label: "코드 블록", before: "```\n", after: "\n```" },
   { label: "표", before: "| 제목 | 제목 |\n|---|---|\n| 내용 | 내용 |\n", after: "" },
@@ -40,6 +40,7 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
   const [draft] = useState(() => readDraft(draftKey));
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const thumbRef = useRef<HTMLInputElement>(null);
+  const photoRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState(draft?.title ?? post?.title ?? "");
   const [excerpt, setExcerpt] = useState(draft?.excerpt ?? post?.excerpt ?? "");
@@ -52,6 +53,7 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
   const [restored, setRestored] = useState(Boolean(draft));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -82,6 +84,39 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
       area.selectionStart = start + tool.before.length;
       area.selectionEnd = end + tool.before.length;
     });
+  }
+
+  function insertAtCursor(text: string) {
+    const area = bodyRef.current;
+    if (!area) return;
+    const { selectionStart: start, selectionEnd: end, value } = area;
+    const next = value.slice(0, start) + text + value.slice(end);
+    area.value = next;
+    area.selectionStart = area.selectionEnd = start + text.length;
+    setContent(next);
+  }
+
+  // 본문 사진 - 브라우저에서 줄여 올리고, 돌려받은 주소를 커서 자리에 넣음
+  async function uploadPhotos(files: File[]) {
+    const images = files.filter((f) => f.type.startsWith("image/"));
+    if (images.length === 0) return;
+    setError("");
+    setUploading(images.length);
+    for (const image of images) {
+      try {
+        const jpeg = await toJpeg(image, { maxSize: 1600 });
+        const blob = await fetch(jpeg).then((r) => r.blob());
+        const form = new FormData();
+        form.append("file", new File([blob], "photo.jpg", { type: "image/jpeg" }));
+        const res = await fetch("/api/uploads", { method: "POST", body: form });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error);
+        insertAtCursor(`\n![사진](${data.url})\n`);
+      } catch (err) {
+        setError((err as Error).message || "사진을 올리지 못했습니다.");
+      }
+      setUploading((n) => n - 1);
+    }
   }
 
   async function handleThumbnail(file?: File) {
@@ -180,6 +215,20 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
             {tool.label}
           </button>
         ))}
+        <button className="btn-ghost" type="button" onClick={() => photoRef.current?.click()} disabled={uploading > 0}>
+          {uploading > 0 ? `사진 올리는 중 (${uploading})` : "사진 올리기"}
+        </button>
+        <input
+          ref={photoRef}
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+          onChange={(e) => {
+            uploadPhotos(Array.from(e.target.files ?? []));
+            e.target.value = "";
+          }}
+        />
       </div>
       <div className="post-write">
         <textarea
@@ -188,6 +237,17 @@ export default function PostEditor({ post, categories, onClose }: { post?: PostI
           aria-label="본문"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            if (e.dataTransfer.files.length === 0) return;
+            e.preventDefault();
+            uploadPhotos(Array.from(e.dataTransfer.files));
+          }}
+          onPaste={(e) => {
+            if (e.clipboardData.files.length === 0) return;
+            e.preventDefault();
+            uploadPhotos(Array.from(e.clipboardData.files));
+          }}
           required
         />
         <div className="post-body post-preview" aria-label="미리보기">
