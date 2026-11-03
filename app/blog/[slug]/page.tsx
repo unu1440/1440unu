@@ -4,9 +4,11 @@ import type { Metadata } from "next";
 import Markdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+import Comments from "@/components/Comments";
 import PostAdmin from "@/components/PostAdmin";
 import SiteHeader from "@/components/SiteHeader";
 import { requireAdmin } from "@/lib/auth";
+import { loadComments, makeFormToken } from "@/lib/comments";
 import { formatPostDate, parsePostLinks, readingMinutes } from "@/lib/post-utils";
 import { loadCategories, loadPost } from "@/lib/posts";
 
@@ -26,6 +28,7 @@ export default async function PostPage({ params }: Props) {
   if (!post) notFound();
   const categories = isAdmin ? await loadCategories() : [];
   const postLinks = parsePostLinks(post.links);
+  const comments = post.published ? await loadComments(post.id) : [];
 
   return (
     <>
@@ -63,6 +66,7 @@ export default async function PostPage({ params }: Props) {
             </ul>
           </section>
         )}
+        {post.published && <Comments postId={post.id} comments={comments} token={makeFormToken()} isAdmin={isAdmin} />}
         {isAdmin && <PostAdmin post={post} categories={categories} />}
       </main>
     </>

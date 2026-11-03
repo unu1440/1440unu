@@ -582,6 +582,20 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .post-links ul { list-style: none; margin: 0; padding: 0; }
 .post-links li { padding: 3px 0; }
 .post-links a { color: var(--accent); }
+.comments { margin: 0 0 40px; padding-top: 20px; border-top: 1px solid var(--line); }
+.comments h2 { color: var(--ink-dim); font-size: 14px; font-weight: 600; margin: 0 0 8px; }
+.comment-list { list-style: none; margin: 0 0 16px; padding: 0; }
+.comment-list li { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.comment-meta { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13px; color: var(--ink-dim); }
+.comment-meta strong { color: var(--ink); font-weight: 600; }
+.comment-meta .btn-link { margin-left: auto; font-size: 13px; }
+.comment-text { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.comment-form { display: grid; gap: 8px; }
+.comment-form input, .comment-form textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; font-size: 14px; }
+.comment-form input { max-width: 220px; }
+.comment-form textarea { resize: vertical; }
+.comment-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.comment-form-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-dim); }
 .post-admin { display: flex; align-items: center; gap: 12px; margin: 0 0 24px; }
 .editor-form .post-check { display: flex; flex-direction: row; align-items: center; gap: 8px; }
 .editor-form .post-check input { width: auto; }

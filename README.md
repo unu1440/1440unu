@@ -9,6 +9,7 @@ DB중심.
 
 | 날짜 | 내용 |
 |---|---|
+| 2026.11.03 | 블로그 댓글 추가 (스팸 방지: 숨김 칸, 작성 시간, 횟수 제한, 링크 제한) |
 | 2026.11.02 | 블로그 본문 사진 올리기 추가 |
 | 2026.11.01 | 프로젝트 팝업에 사진 여러 장과 화살표 추가, 썸네일 확대 |
 | 2026.11.01 | 블로그 기능 추가 (글쓰기, 카테고리, 해시태그, 검색, 썸네일, 글 링크) |
@@ -34,7 +35,8 @@ app/
    ├─ profile/         프로필 수정
    ├─ history/         프로젝트·학력·경력·자격 추가/수정/삭제
    ├─ posts/           글 작성/수정/삭제
-   └─ categories/      카테고리 추가/이름 변경/삭제
+   ├─ categories/      카테고리 추가/이름 변경/삭제
+   └─ comments/        댓글 쓰기, 관리자 삭제
 
 components/
 ├─ PortfolioView.tsx   두 언어 페이지를 같이 그리는 화면
@@ -43,9 +45,10 @@ components/
 ├─ BlogList.tsx        글 목록, 카테고리·검색·해시태그 필터
 ├─ PostEditor.tsx      Markdown 글쓰기, 미리보기, 임시저장
 ├─ CategoryManager.tsx 카테고리 관리
+├─ Comments.tsx        글 아래 댓글 목록과 쓰기 폼
 └─ SiteHeader.tsx
 
-lib/                   auth(세션 쿠키) · history · i18n · image · posts · prisma
+lib/                   auth(세션 쿠키) · comments · history · i18n · image · posts · prisma
 prisma/                schema.prisma · migrations · seed
 ```
 

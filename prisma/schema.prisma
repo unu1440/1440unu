@@ -78,6 +78,22 @@ model Post {
   tags         String? // 쉼표로 구분
   thumbnail    String? // 썸네일 (JPEG data URL)
   links        String? // 글 맨 밑 링크, 한 줄에 하나 "이름 | 주소"
+  comments     Comment[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+}
+
+// 블로그 댓글 - 로그인 없이 닉네임으로 작성, 관리자만 삭제. 글을 지우면 같이 지워짐
+// ipHash: IP를 SESSION_SECRET으로 해시한 값 (횟수 제한용, IP 원문은 저장하지 않음)
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  name      String
+  content   String
+  ipHash    String
+  createdAt DateTime @default(now())
+
+  @@index([postId, createdAt])
+  @@index([ipHash, createdAt])
 }
